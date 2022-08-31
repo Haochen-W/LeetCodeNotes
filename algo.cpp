@@ -5,6 +5,8 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <stack>
+#include <set>
 
 using namespace std;
 
@@ -229,6 +231,38 @@ namespace TopologicalSort
                     dfs(i);
             }
             reverse(ans.begin(), ans.end());
+        }
+    };
+
+    class DFSVersionIterative
+    {
+        vector<int> topological_sort(int n, vector<set<int>> graph, int start)
+        {
+            vector<int> visited (n, false);
+            vector<int> stack, order;
+            std::stack<int> s;
+            s.push(start);
+            while (s.size())
+            {
+                int curr = s.top(); 
+                s.pop();
+                if (!visited[curr])
+                {
+                    visited[curr] = true;
+                    for (int neigh : graph[curr])
+                    {
+                        s.push(neigh);
+                    }
+                    while (stack.size() && !graph[stack.back()].count(curr))
+                    {
+                        order.push_back(stack.back());
+                        stack.pop_back();
+                    }
+                }
+            }
+            // ans = stack;
+            stack.insert(stack.end(), order.rbegin(), order.rend());
+            return stack;
         }
     };
 
