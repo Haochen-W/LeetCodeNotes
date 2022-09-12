@@ -304,7 +304,7 @@ namespace TopologicalSort
             return cnt == n;
         }
     };
-}
+} // namespace TopologicalSort
 
 namespace Dijkstras
 {
@@ -466,7 +466,7 @@ namespace QuickSelect
             return r;
         }
     };
-} // QuickSelect
+} // namespace QuickSelect
 
 namespace SegmentTree
 {
@@ -808,7 +808,7 @@ namespace DigitDP
             return res;
         }
     };
-}
+} // namespace DigitDP
 
 namespace ConvexHull
 {
@@ -871,7 +871,48 @@ namespace ConvexHull
             return H;
         }
     };
-}
+} // namespace ConvexHull
+
+namespace Combinatorics
+{
+
+    long long fact(int n)
+    {
+        if (n <= 1)
+            return 1;
+        long long res = 1;
+        for (int i = 2; i <= n; i++)
+        {
+            res *= i;
+        }
+        return res;
+    }
+
+    class NChooseK
+    {
+        long long compute(int n, int k)
+        {
+            if (n < k)
+                return 0;
+
+            long long res = 1;
+
+            for (long long i = 1; i <= k; ++i, n--)
+            {
+                res = res * (long long)(n) / i;
+            }
+            return res;
+        }
+    };
+
+    class NPermuteK
+    {
+        long long compute(int n, int k)
+        {
+            return fact(n) / fact(n - k);
+        }
+    };
+} // namespace Combinatorics
 
 int main()
 {
