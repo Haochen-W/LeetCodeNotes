@@ -4,9 +4,12 @@
 #include <unordered_map>
 #include <map>
 #include <string>
+#include <iostream>
+#include <sstream>
 #include <memory>
 #include <stack>
 #include <set>
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
@@ -1033,6 +1036,57 @@ namespace Combinatorics
         }
     };
 } // namespace Combinatorics
+
+namespace StringSplit
+{
+    class UseSTL
+    {
+        vector<string> splitByWhitespace(string s)
+        {
+            istringstream ss(s);
+            string token;
+            vector<string> tokens;
+            while (ss >> token)
+                tokens.push_back(token);
+            return tokens;
+        }
+
+        vector<string> splitAnyDelimiter(string s, string delimiter)
+        {
+            size_t pos_start = 0, pos_end, delim_len = delimiter.length();
+            string token;
+            vector<string> res;
+
+            while ((pos_end = s.find(delimiter, pos_start)) != string::npos)
+            {
+                token = s.substr(pos_start, pos_end - pos_start);
+                pos_start = pos_end + delim_len;
+                res.push_back(token);
+            }
+
+            res.push_back(s.substr(pos_start));
+            return res;
+        }
+
+        vector<string> splitSingleDelimiter(string s, char delimiter)
+        {
+            istringstream ss(s);
+            string token;
+            vector<string> res;
+
+            while (getline(ss, token, delimiter))
+                res.push_back(token);
+
+            return res;
+        }
+        vector<string> splitUseBoost(string s, string delimiter)
+        {
+            vector<string> tokens;
+            boost::split(tokens, s, boost::is_any_of(delimiter));
+            return tokens;
+        }
+    };
+} // namespace StringSplit
 
 int main()
 {
