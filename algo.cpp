@@ -862,7 +862,7 @@ namespace DigitDP
         /// How many numbers x are there in the range a to b, where the digit d occurs exactly k times in x?
 
         vector<int> num;
-        int a, b, d, k;
+        int d, k;
         int DP[12][12][2];
         /// DP[p][c][f] = Number of valid numbers <= b from this state
         /// p = current position from left side (zero based)
