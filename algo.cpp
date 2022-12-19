@@ -33,6 +33,8 @@ namespace LinkedList
             slow = slow->next;
             fast = fast->next->next;
         }
+        // 1, 2, 3, 4, 5, 6    -> return 4
+        // 1, 2, 3, 4, 5, 6, 7 -> return 4
         return slow;
     }
 } // namespace LinkedList
@@ -43,6 +45,7 @@ namespace unionFind
     {
         vector<int> parent;
         vector<int> size;
+        int groups;
 
         DisjointSetUnionBySize(int maxSize)
         {
@@ -53,6 +56,7 @@ namespace unionFind
                 parent[i] = i;
                 size[i] = 1;
             }
+            groups = maxSize;
         }
 
         int find_set(int v)
@@ -62,7 +66,17 @@ namespace unionFind
             return parent[v] = find_set(parent[v]);
         }
 
-        void union_set(int a, int b)
+        int find_set_iter(int v)
+        {
+            while (v != parent[v])
+            {
+                parent[v] = parent[parent[v]];
+                v = parent[v];
+            }
+            return v;
+        }
+
+        bool union_set(int a, int b)
         {
             a = find_set(a);
             b = find_set(b);
@@ -72,61 +86,69 @@ namespace unionFind
                     swap(a, b);
                 parent[b] = a;
                 size[a] += size[b];
+                groups--;
+                return true;
             }
+            return false;
+        }
+        int find_groups()
+        {
+            return groups;
         }
     };
 
-    class DisjointSetUnionByRank
+    struct DisjointSetUnionByRank
     {
-    public:
-        vector<int> parent; // Stores the parent of ith node
-        vector<int> rank;   // Stores the rank of ith node
+        vector<int> parent;
+        vector<int> size;
+        vector<int> rank;
+        int groups;
 
-        DisjointSetUnionByRank(int n)
-        { // n is the number of nodes in the graph
-            parent.resize(n);
-            rank.resize(n);
-
-            for (int i = 0; i < n; i++)
-            { // Inititalize the parent of node i as i itself. Meaning they are a set on their own
+        DisjointSetUnionByRank(int maxSize)
+        {
+            parent.resize(maxSize);
+            size.resize(maxSize);
+            rank.resize(maxSize);
+            groups = maxSize;
+            for (int i = 0; i < maxSize; i++)
+            {
                 parent[i] = i;
+                size[i] = 1;
                 rank[i] = 0;
             }
         }
 
-        bool Union(int u, int v)
-        { // Union by Rank . Returns TRUE if UNION can be performed without introducing any cycle
-            // Get the representatives of the vertices
-            int ru = Find(u);
-            int rv = Find(v);
-
-            // an edge between them will create a loop since they both belong to the same set/component
-            if (ru == rv)
-                return false;
-
-            if (rank[ru] > rank[rv])
-            {
-                parent[rv] = parent[ru];
-            }
-            else if (rank[rv] > rank[ru])
-            {
-                parent[ru] = parent[rv];
-            }
-            else
-            {
-                parent[rv] = parent[ru];
-                rank[ru]++;
-            }
-            return true;
+        int find_set(int v)
+        {
+            if (v == parent[v])
+                return v;
+            return parent[v] = find_set(parent[v]);
         }
 
-        int Find(int node)
-        { // Returns the representative of this node
-            if (parent[node] == node)
-                return node; // If i am my own parent/rep
-            // Find with Path compression, meaning we update the parent for this node once recursion returns
-            parent[node] = Find(parent[node]);
-            return parent[node];
+        int find_set_iter(int v)
+        {
+            while (v != parent[v])
+            {
+                parent[v] = parent[parent[v]];
+                v = parent[v];
+            }
+            return v;
+        }
+
+        bool union_set(int a, int b)
+        {
+            a = find_set(a);
+            b = find_set(b);
+            if (a != b)
+            {
+                if (rank[a] < rank[b])
+                    swap(a, b);
+                parent[b] = parent[a];
+                size[a] += size[b];
+                if (rank[a] == rank[b]) rank[a]++;
+                return true;
+            }
+            return false;
         }
     };
 
@@ -153,17 +175,36 @@ namespace unionFind
             return parent[v] = find(parent[v]);
         }
 
-        void add(T &a, T &b)
+        const T &find_iter(const T &v)
         {
-            a = find(a);
-            b = find(b);
-            if (a != b)
+            if (!parent.count(v))
             {
-                if (size[a] < size[b])
-                    swap(a, b);
-                parent[b] = a;
-                size[a] += size[b];
+                parent[v] = v;
+                size[v] = 1;
+                return v;
             }
+            const T m = v;
+            while (m != parent[m])
+            {
+                parent[m] = parent[parent[m]];
+                m = parent[m];
+            }
+            return m;
+        }
+
+        bool add(const T &a, const T &b)
+        {
+            const T& aa = find(a);
+            const T& bb = find(b);
+            if (aa != bb)
+            {
+                if (size[aa] < size[bb])
+                    swap(aa, bb);
+                parent[bb] = aa;
+                size[aa] += size[bb];
+                return true;
+            }
+            return false;
         }
     };
 } // namespace unionFind
