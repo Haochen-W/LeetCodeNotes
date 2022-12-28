@@ -145,7 +145,8 @@ namespace unionFind
                     swap(a, b);
                 parent[b] = parent[a];
                 size[a] += size[b];
-                if (rank[a] == rank[b]) rank[a]++;
+                if (rank[a] == rank[b])
+                    rank[a]++;
                 return true;
             }
             return false;
@@ -194,8 +195,8 @@ namespace unionFind
 
         bool add(const T &a, const T &b)
         {
-            const T& aa = find(a);
-            const T& bb = find(b);
+            const T &aa = find(a);
+            const T &bb = find(b);
             if (aa != bb)
             {
                 if (size[aa] < size[bb])
@@ -515,6 +516,115 @@ namespace Trie
         }
     };
 } // namespace Trie
+
+namespace MorrisTraversal
+{
+    struct TreeNode
+    {
+        int val;
+        TreeNode *left;
+        TreeNode *right;
+    };
+    vector<int> inorder(TreeNode *root)
+    {
+        vector<int> res;
+        TreeNode *curr = root;
+        while (curr)
+        {
+            if (!curr->left)
+            {
+                res.push_back(curr->val);
+                curr = curr->right;
+            }
+            else
+            {
+                TreeNode *prev = curr->left;
+                while (prev->right && prev->right != curr)
+                    prev = prev->right;
+                if (!prev->right)
+                {
+                    prev->right = curr;
+                    curr = curr->left;
+                }
+                else
+                {
+                    // curr subtree traversed. revert the temp link and backtrack.
+                    prev->right = nullptr;
+                    res.push_back(curr->val);
+                    curr = curr->right;
+                }
+            }
+        }
+        return res;
+    }
+
+    vector<int> preorder(TreeNode *root)
+    {
+        vector<int> res;
+        TreeNode *curr = root;
+        while (curr)
+        {
+            if (!curr->left)
+            {
+                res.push_back(curr->val);
+                curr = curr->right;
+            }
+            else
+            {
+                TreeNode *prev = curr->left;
+                while (prev->right && prev->right != curr)
+                    prev = prev->right;
+                if (!prev->right)
+                {
+                    res.push_back(curr->val);
+                    prev->right = curr;
+                    curr = curr->left;
+                }
+                else
+                {
+                    // curr subtree traversed. revert the temp link and backtrack.
+                    prev->right = nullptr;
+                    curr = curr->right;
+                }
+            }
+        }
+        return res;
+    }
+
+    vector<int> postorder(TreeNode *root)
+    {
+        vector<int> res;
+        TreeNode *curr = root;
+        while (curr)
+        {
+            if (!curr->right)
+            {
+                res.push_back(curr->val);
+                curr = curr->left;
+            }
+            else
+            {
+                TreeNode *prev = curr->right;
+                while (prev->left && prev->left != curr)
+                    prev = prev->left;
+                if (!prev->left)
+                {
+                    res.push_back(curr->val);
+                    prev->left = curr;
+                    curr = curr->right;
+                }
+                else
+                {
+                    // curr subtree traversed. revert the temp link and backtrack.
+                    prev->left = nullptr;
+                    curr = curr->left;
+                }
+            }
+        }
+        reverse(res.begin(), res.end());
+        return res;
+    }
+} // namespace MorrisTraversal
 
 namespace QuickSelect
 {
