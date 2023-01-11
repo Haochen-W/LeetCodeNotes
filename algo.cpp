@@ -958,7 +958,7 @@ namespace BinaryIndexedTree
         // return prefix sum at this index, e.g. ask(7) = nums[0] + ... + nums[6]
         int query(int l, int r) const
         {
-            return ask(r) - ask(l - 1);
+            return ask(r+1) - ask(l);
         }
     };
     class RangeModifySingleQuery
